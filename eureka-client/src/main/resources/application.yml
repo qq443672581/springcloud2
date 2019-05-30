@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: erueka-client
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 10
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1001/eureka/
