@@ -1,0 +1,23 @@
+server:
+  port: 8002
+spring:
+#  cloud:
+#    gateway:
+#      routes:
+#      - id: limit_route
+#        uri: http://127.0.0.1:8888
+#        predicates:
+#          - Path=/store/**
+#        filters:
+#          - RewritePath=/store/(?<segment>.*), /$\{segment}
+#          - AddRequestHeader=Hello, World
+#          - name: RequestRateLimiter
+#            args:
+#              key-resolver: '#{@urlKeyResolver}'
+#              redis-rate-limiter.replenishRate: 1
+#              redis-rate-limiter.burstCapacity: 10
+  redis:
+    host: 10.16.0.58
+    port: 6379
+    password: 123456
+    database: 0
