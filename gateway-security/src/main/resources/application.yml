@@ -1,21 +1,24 @@
 server:
   port: 8002
 spring:
-#  cloud:
-#    gateway:
-#      routes:
-#      - id: limit_route
-#        uri: http://127.0.0.1:8888
-#        predicates:
-#          - Path=/store/**
-#        filters:
-#          - RewritePath=/store/(?<segment>.*), /$\{segment}
-#          - AddRequestHeader=Hello, World
-#          - name: RequestRateLimiter
-#            args:
-#              key-resolver: '#{@urlKeyResolver}'
-#              redis-rate-limiter.replenishRate: 1
-#              redis-rate-limiter.burstCapacity: 10
+  cloud:
+    gateway:
+      routes:
+      - id: limit_route
+        uri: http://127.0.0.1:9000
+        predicates:
+        - Path=/store/**
+        filters:
+        # 转发请求时去掉1级前缀
+        - StripPrefix=1
+        # 重写
+        #        - RewritePath=/store/(?<segment>.*), /$\{segment}
+        - AddRequestHeader=Hello, World
+        - name: RequestRateLimiter
+          args:
+            key-resolver: '#{@urlKeyResolver}'
+            redis-rate-limiter.replenishRate: 1
+            redis-rate-limiter.burstCapacity: 10
   redis:
     host: 10.16.0.58
     port: 6379
