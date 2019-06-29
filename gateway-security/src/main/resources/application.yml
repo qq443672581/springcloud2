@@ -1,26 +1,41 @@
 server:
   port: 8002
 spring:
+  session:
+    store-type: redis
+    timeout: 24h
+  application:
+    name: gateway
   cloud:
     gateway:
       routes:
       - id: limit_route
-        uri: http://127.0.0.1:9000
+#        uri: http://127.0.0.1:9000
+        uri: lb://book
         predicates:
-        - Path=/store/**
+        - Path=/book/**
         filters:
         # 转发请求时去掉1级前缀
         - StripPrefix=1
         # 重写
         #        - RewritePath=/store/(?<segment>.*), /$\{segment}
-        - AddRequestHeader=Hello, World
-        - name: RequestRateLimiter
-          args:
-            key-resolver: '#{@urlKeyResolver}'
-            redis-rate-limiter.replenishRate: 1
-            redis-rate-limiter.burstCapacity: 10
+        - AddRequestHeader=test, hello
+
+#        - name: RequestRateLimiter
+#          args:
+#            key-resolver: '#{@urlKeyResolver}'
+#            redis-rate-limiter.replenishRate: 1
+#            redis-rate-limiter.burstCapacity: 10
   redis:
-    host: 10.16.0.58
+    host: 192.168.3.188
     port: 6379
     password: 123456
     database: 0
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 10
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.3.201:1001/eureka/,http://192.168.3.202:1001/eureka/,http://192.168.3.203:1001/eureka/

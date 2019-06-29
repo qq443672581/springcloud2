@@ -32,13 +32,18 @@ public class HttpConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        http.cors().disable();
+        http.csrf().disable();
+
         http.formLogin();
         ServerHttpSecurity.AuthorizeExchangeSpec exchange = http.authorizeExchange();
 
+        exchange.pathMatchers("/**/favicon.ico").permitAll();
+
         // 具体权限
-        exchange.pathMatchers("/store/book/list").hasRole("book");
+        exchange.pathMatchers("/book/item/*").hasAuthority("book_item");
         // 所有人可以访问
-        exchange.pathMatchers("/store/book").permitAll();
+        exchange.pathMatchers("/book/list").permitAll();
         // 其他接口不可访问
         exchange.anyExchange().denyAll();
 

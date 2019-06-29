@@ -10,4 +10,6 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:1001/eureka/
   server:
-    waitTimeInMsWhenSyncEmpty: 0
+    # 缓存
+    use-read-only-response-cache: false
+    wait-time-in-ms-when-sync-empty: 0

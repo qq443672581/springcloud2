@@ -28,7 +28,7 @@ public class UserService implements ReactiveUserDetailsService {
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_book");
+        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("book_item");
         logger.info("用户的用户名: {}", username);
 
         User user = new User(username, passwordEncoder.encode("123"), authorities);

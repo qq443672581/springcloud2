@@ -1,0 +1,14 @@
+listenerDir: D:/toLinux
+toDir: /datadisk/upFiles
+
+linux-infos:
+  list:
+    - host: 192.168.3.201
+      username: root
+      password: yxx@144830
+    - host: 192.168.3.202
+      username: root
+      password: yxx@144830
+    - host: 192.168.3.203
+      username: root
+      password: yxx@144830

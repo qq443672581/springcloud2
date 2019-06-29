@@ -2,6 +2,7 @@ package cn.dlj1.gateway;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
  */
 @SpringBootApplication
 @EnableWebFluxSecurity
+@EnableEurekaClient
 public class GateWay {
 
     public static void main(String[] args) {
