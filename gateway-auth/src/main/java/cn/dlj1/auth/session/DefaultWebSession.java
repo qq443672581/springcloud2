@@ -7,7 +7,9 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author fivewords
@@ -15,17 +17,25 @@ import java.util.Map;
  */
 public class DefaultWebSession implements WebSession {
 
+    // 最后访问时间
+    static String SA_LAST_ACCESS_TIME = "SESSION_ATTRIBUTE:LAST_ACCESS_TIME";
+    // 是否登录
+    static String SA_LOGIN = "SESSION_ATTRIBUTE:LOGIN";
+    // 用户
+    static String SA_USER = "SESSION_ATTRIBUTE:USER";
+    // 权限
+    static String SA_AUTH_CODES = "SESSION_ATTRIBUTE:AUTH_CODES";
+
     private String id;
     private Map<String, Object> attributes;
-    RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     public DefaultWebSession(String id, Map<String, Object> attributes, RedisTemplate<String, Object> redisTemplate) {
         this.id = id;
         this.attributes = attributes;
         this.redisTemplate = redisTemplate;
 
-        //TODO
-        this.attributes.put("SESSION_ATTRIBUTE_LAST_TIME", new Date());
+        this.attributes.put(SA_LAST_ACCESS_TIME, new Date());
     }
 
     @Override
@@ -36,6 +46,19 @@ public class DefaultWebSession implements WebSession {
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public Set<String> getAuthCodes() {
+        return (HashSet<String>) this.attributes.get(SA_AUTH_CODES);
+    }
+
+    public Object getUser() {
+        return this.attributes.get(SA_USER);
+    }
+
+    public boolean isLogin() {
+        Boolean login = (Boolean) this.attributes.get(SA_LOGIN);
+        return null != login && login;
     }
 
     @Override

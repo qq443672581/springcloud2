@@ -1,12 +1,12 @@
 package cn.dlj1.auth.session;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
@@ -14,6 +14,7 @@ import org.springframework.web.server.session.WebSessionManager;
 import org.springframework.web.server.session.WebSessionStore;
 
 import java.time.Duration;
+import java.util.HashMap;
 
 /**
  * @author fivewords
@@ -36,17 +37,19 @@ public class Config {
     }
 
     @Bean("sessionRedis")
-    public RedisTemplate<String, Object> redisTemplate() {
+    public RedisTemplate<String, Object> redisTemplate(@Value("${spring.redis.host}") String host,
+                                                       @Value("${spring.redis.password}") String password) {
+
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName("10.16.0.58");
-        redisStandaloneConfiguration.setPassword("123456");
+        redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPassword(password);
         redisStandaloneConfiguration.setDatabase(3);
         LettuceConnectionFactory factory = new LettuceConnectionFactory(redisStandaloneConfiguration);
         factory.afterPropertiesSet();
 
         RedisTemplate<String, Object> template = new RedisTemplate();
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new JdkSerializationRedisSerializer());
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(HashMap.class));
         template.setConnectionFactory(factory);
 
         template.afterPropertiesSet();

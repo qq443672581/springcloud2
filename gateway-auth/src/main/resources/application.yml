@@ -24,7 +24,8 @@ spring:
 #            redis-rate-limiter.replenishRate: 1
 #            redis-rate-limiter.burstCapacity: 10
   redis:
-    host: 10.16.0.58
+#    host: 10.16.0.58
+    host: 192.168.3.188
     port: 6379
     password: 123456
     database: 0

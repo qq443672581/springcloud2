@@ -33,6 +33,7 @@ public class RedisSessionStore implements WebSessionStore {
         if (null == o) {
             return Mono.empty();
         }
+
         WebSession webSession = new DefaultWebSession(id, o, redisTemplate);
         return Mono.just(webSession);
     }
