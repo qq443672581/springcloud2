@@ -85,6 +85,7 @@ public class HttpConfig implements CommandLineRunner {
         ServerHttpSecurity.AuthorizeExchangeSpec exchange = http.authorizeExchange();
 
         exchange.pathMatchers("/**/favicon.ico").permitAll();
+        exchange.pathMatchers("/actuator/**").permitAll();
 
         // 具体权限
         exchange.pathMatchers("/debug").hasAuthority("debug");

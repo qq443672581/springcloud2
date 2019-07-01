@@ -1,9 +1,6 @@
 server:
   port: 8002
 spring:
-  session:
-    store-type: redis
-    timeout: 24h
   application:
     name: gateway
   cloud:
