@@ -20,14 +20,13 @@ public class DefaultAuthCheckService implements AuthCheckService {
 
     @Override
     public Mono<Integer> check(ServerWebExchange exchange) {
-
         Mono<WebSession> session = exchange.getSession();
-        DefaultWebSession block = (DefaultWebSession) session.block();
-
-        if (!block.isLogin()) {
+        Object user = ((DefaultWebSession) session.block()).getUser();
+        if (null == user) {
             return Mono.just(-1);
         }
-        Set<String> authCodes = block.getAuthCodes();
+
+        Set<String> authCodes = null;
         if (null == authCodes) {
             return Mono.just(0);
         }

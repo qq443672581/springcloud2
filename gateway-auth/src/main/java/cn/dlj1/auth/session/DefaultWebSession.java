@@ -2,40 +2,51 @@ package cn.dlj1.auth.session;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.server.WebSession;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
+ * 默认session实现
+ *
  * @author fivewords
  * @date 2019/7/1 15:37
  */
 public class DefaultWebSession implements WebSession {
 
+    // 创建时间
+    static String SA_CREATE_TIME = "SESSION_ATTRIBUTE:CREATE_TIME";
     // 最后访问时间
     static String SA_LAST_ACCESS_TIME = "SESSION_ATTRIBUTE:LAST_ACCESS_TIME";
+    // 最大存活时间
+    static String SA_MAX_IDLE_TIME = "SESSION_ATTRIBUTE:MAX_IDLE_TIME";
     // 是否登录
     static String SA_LOGIN = "SESSION_ATTRIBUTE:LOGIN";
     // 用户
     static String SA_USER = "SESSION_ATTRIBUTE:USER";
-    // 权限
-    static String SA_AUTH_CODES = "SESSION_ATTRIBUTE:AUTH_CODES";
 
     private String id;
-    private Map<String, Object> attributes;
+    private boolean start = true;
+    private Attributes attributes;
     private RedisTemplate<String, Object> redisTemplate;
 
-    public DefaultWebSession(String id, Map<String, Object> attributes, RedisTemplate<String, Object> redisTemplate) {
+    public DefaultWebSession(String id, Attributes attributes, RedisTemplate<String, Object> redisTemplate) {
         this.id = id;
         this.attributes = attributes;
         this.redisTemplate = redisTemplate;
+    }
 
-        this.attributes.put(SA_LAST_ACCESS_TIME, new Date());
+    public void init(long CookieMaxAge) {
+        Date date = new Date();
+        attributes.put(DefaultWebSession.SA_CREATE_TIME, date);
+        attributes.put(DefaultWebSession.SA_LAST_ACCESS_TIME, date);
+        attributes.put(DefaultWebSession.SA_MAX_IDLE_TIME, CookieMaxAge);
+        attributes.put(DefaultWebSession.SA_LOGIN, false);
+        attributes.put(DefaultWebSession.SA_USER, null);
     }
 
     @Override
@@ -46,10 +57,6 @@ public class DefaultWebSession implements WebSession {
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
-    }
-
-    public Set<String> getAuthCodes() {
-        return (HashSet<String>) this.attributes.get(SA_AUTH_CODES);
     }
 
     public Object getUser() {
@@ -68,8 +75,7 @@ public class DefaultWebSession implements WebSession {
 
     @Override
     public boolean isStarted() {
-        System.out.println("session:isStarted");
-        return true;
+        return start;
     }
 
     @Override
@@ -80,40 +86,63 @@ public class DefaultWebSession implements WebSession {
 
     @Override
     public Mono<Void> invalidate() {
+        start = false;
+        attributes.clear();
+        this.redisTemplate.delete(id);
         System.out.println("session:invalidate");
-        return null;
-    }
-
-    @Override
-    public Mono<Void> save() {
-        this.redisTemplate.opsForValue().set(id, getAttributes(), Duration.ofHours(24));
         return Mono.empty();
     }
 
     @Override
+    public Mono<Void> save() {
+        Duration maxIdleTime = getMaxIdleTime();
+        return Mono.fromRunnable(() -> {
+            System.out.println();
+            Map<String, Object> attributes = this.getAttributes();
+            this.redisTemplate.opsForValue().set(id, attributes, maxIdleTime);
+        });
+    }
+
+    @Override
     public boolean isExpired() {
-        System.out.println("session:isExpired");
+        Instant lastAccessTime = getLastAccessTime();
+        Duration maxIdleTime = getMaxIdleTime();
+        if (null == lastAccessTime || null == maxIdleTime || (lastAccessTime.toEpochMilli() + maxIdleTime.toMillis()) < System.currentTimeMillis()) {
+            return true;
+        }
         return false;
     }
 
     @Override
     public Instant getCreationTime() {
-        return null;
+        Date date = getAttribute(SA_CREATE_TIME);
+        if (null == date) {
+            return null;
+        }
+        return date.toInstant();
     }
 
     @Override
     public Instant getLastAccessTime() {
-        return null;
+        Date date = getAttribute(SA_CREATE_TIME);
+        if (null == date) {
+            return null;
+        }
+        return date.toInstant();
     }
 
     @Override
     public void setMaxIdleTime(Duration duration) {
-
+        attributes.put(SA_MAX_IDLE_TIME, duration.toMillis());
     }
 
     @Override
     public Duration getMaxIdleTime() {
-        return null;
+        Long d = getAttribute(SA_MAX_IDLE_TIME);
+        if (null == d) {
+            return null;
+        }
+        return Duration.ofMillis(d);
     }
 
     @Override
@@ -123,11 +152,19 @@ public class DefaultWebSession implements WebSession {
 
     @Override
     public <T> T getRequiredAttribute(String name) {
-        throw new IllegalArgumentException();
+        T o = getAttribute(name);
+        if (null == o) {
+            throw new IllegalArgumentException();
+        }
+        return o;
     }
 
     @Override
     public <T> T getAttributeOrDefault(String name, T defaultValue) {
-        return defaultValue;
+        T o = getAttribute(name);
+        if (null == o) {
+            return defaultValue;
+        }
+        return o;
     }
 }

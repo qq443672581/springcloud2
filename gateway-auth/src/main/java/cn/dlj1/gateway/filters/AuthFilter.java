@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.security.Principal;
-
 @Component
 public class AuthFilter implements GlobalFilter, Ordered {
 
@@ -25,17 +23,18 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
         Mono<Integer> check = authCheckService.check(exchange);
 
         Integer block = check.block();
         if (block == -1) {
             // 没登陆
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-            return Mono.empty();
+            return exchange.getResponse().setComplete();
         }
         if (block == 0) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-            return Mono.empty();
+            return exchange.getResponse().setComplete();
         }
 
         return chain.filter(exchange);
