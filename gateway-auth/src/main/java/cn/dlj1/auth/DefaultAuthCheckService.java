@@ -1,16 +1,13 @@
 package cn.dlj1.auth;
 
 import cn.dlj1.auth.session.DefaultWebSession;
-import org.springframework.http.server.RequestPath;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class DefaultAuthCheckService implements AuthCheckService {
@@ -20,39 +17,21 @@ public class DefaultAuthCheckService implements AuthCheckService {
 
     @Override
     public Mono<Integer> check(ServerWebExchange exchange) {
-        Mono<WebSession> session = exchange.getSession();
-        Object user = ((DefaultWebSession) session.block()).getUser();
-        if (null == user) {
-            return Mono.just(-1);
-        }
-
-        Set<String> authCodes = null;
-        if (null == authCodes) {
-            return Mono.just(0);
-        }
-
-        RequestPath path = exchange.getRequest().getPath();
-        String value = path.value();
-
-        String code = null;
-        for (Map.Entry<String, String> pattern : patterns.entrySet()) {
-            boolean match = matcher.match(pattern.getKey(), value);
-            if (match) {
-                code = pattern.getValue();
-                break;
+        return exchange.getSession().flatMap(webSession -> {
+            if (null == webSession) {
+                return Mono.just(-1);
             }
-        }
-        // 地址不可用
-        if (null == code) {
-            return Mono.just(0);
-        }
-        // 无权限
-        if (!authCodes.contains(code)) {
-            return Mono.just(0);
-        }
+            DefaultWebSession defaultWebSession = (DefaultWebSession) webSession;
+            Object user = defaultWebSession.getUser();
+            if (null == user) {
+                return Mono.just(-1);
+            }
+//            return Mono.just(0);
 
 
-        return Mono.just(1);
+            return Mono.just(1);
+        });
+
     }
 
 }

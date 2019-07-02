@@ -9,7 +9,6 @@ import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
 /**
@@ -20,8 +19,13 @@ import reactor.core.publisher.Mono;
 public class Rfs {
 
     @GetMapping("/debug")
-    public Mono<String> debug(WebSession webSession) {
+    public Mono<String> debug() {
         return Mono.just("ok");
+    }
+
+    @GetMapping("/login")
+    public Mono<String> login() {
+        return Mono.just("login");
     }
 
     /**

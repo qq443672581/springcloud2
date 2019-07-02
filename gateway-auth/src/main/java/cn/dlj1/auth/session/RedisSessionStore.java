@@ -2,7 +2,8 @@ package cn.dlj1.auth.session;
 
 import cn.dlj1.auth.Config;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.server.session.WebSessionStore;
@@ -10,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.time.Duration;
 import java.util.UUID;
 
 /**
@@ -20,8 +20,9 @@ import java.util.UUID;
 @Component
 public class RedisSessionStore implements WebSessionStore {
 
-    @Resource(name = "sessionRedisTemplate")
-    RedisTemplate<String, Object> redisTemplate;
+    //    @Resource(name = "sessionRedisTemplate")
+    @Autowired
+    ReactiveRedisTemplate<String, String> redisTemplate;
     @Autowired
     Config.Props props;
 
@@ -42,13 +43,13 @@ public class RedisSessionStore implements WebSessionStore {
 
     @Override
     public Mono<WebSession> retrieveSession(String id) {
-        Attributes attributes = (Attributes) redisTemplate.opsForValue().get(id);
-        if (null == attributes) {
-            return Mono.empty();
-        }
-        DefaultWebSession webSession = new DefaultWebSession(id, attributes, redisTemplate);
-
-        return Mono.justOrEmpty(webSession);
+        return redisTemplate
+                .opsForValue()
+                .get(id)
+                .switchIfEmpty(Mono.empty())
+                .flatMap(s -> {
+            return Mono.just(new DefaultWebSession(id, new Attributes(), redisTemplate));
+        });
     }
 
     @Override
@@ -58,7 +59,7 @@ public class RedisSessionStore implements WebSessionStore {
 
     @Override
     public Mono<WebSession> updateLastAccessTime(WebSession webSession) {
-        redisTemplate.opsForValue().set(webSession.getId(), webSession, Duration.ofHours(24));
+
         return Mono.just(webSession);
     }
 }

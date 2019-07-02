@@ -1,8 +1,8 @@
 package cn.dlj1.auth.session;
 
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.web.server.WebSession;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -32,9 +32,9 @@ public class DefaultWebSession implements WebSession {
     private String id;
     private boolean start = true;
     private Attributes attributes;
-    private RedisTemplate<String, Object> redisTemplate;
+    private ReactiveRedisTemplate<String, String> redisTemplate;
 
-    public DefaultWebSession(String id, Attributes attributes, RedisTemplate<String, Object> redisTemplate) {
+    public DefaultWebSession(String id, Attributes attributes, ReactiveRedisTemplate<String, String> redisTemplate) {
         this.id = id;
         this.attributes = attributes;
         this.redisTemplate = redisTemplate;
@@ -81,11 +81,14 @@ public class DefaultWebSession implements WebSession {
     @Override
     public Mono<Void> changeSessionId() {
         System.out.println("session:changeSessionId");
-        return null;
+        return Mono.empty();
     }
 
     @Override
     public Mono<Void> invalidate() {
+        Mono.create(monoSink -> {
+            Mono.just("");
+        });
         start = false;
         attributes.clear();
         this.redisTemplate.delete(id);
@@ -96,11 +99,9 @@ public class DefaultWebSession implements WebSession {
     @Override
     public Mono<Void> save() {
         Duration maxIdleTime = getMaxIdleTime();
-        return Mono.fromRunnable(() -> {
-            System.out.println();
-            Map<String, Object> attributes = this.getAttributes();
-            this.redisTemplate.opsForValue().set(id, attributes, maxIdleTime);
-        });
+        Map<String, Object> attributes = this.getAttributes();
+        return this.redisTemplate.opsForValue().set(id, "", maxIdleTime).flatMap(aBoolean -> Mono.empty());
+
     }
 
     @Override

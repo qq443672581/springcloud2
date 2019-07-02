@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
@@ -113,28 +113,36 @@ public class Config {
      * @param props
      * @return
      */
-    @Bean("sessionRedisFactory")
-    public RedisConnectionFactory factory(Props props) {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(props.getRedisHost());
-        configuration.setPort(props.getRedisPort());
-        configuration.setPassword(props.getRedisPassword());
-        configuration.setDatabase(props.getRedisDb());
-        return new LettuceConnectionFactory(configuration);
-    }
+//    @Bean("sessionRedisFactory")
+//    public ReactiveRedisConnectionFactory factory(Props props) {
+//        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(props.getRedisHost());
+//        configuration.setPort(props.getRedisPort());
+//        configuration.setPassword(props.getRedisPassword());
+//        configuration.setDatabase(props.getRedisDb());
+//        return new LettuceConnectionFactory(configuration);
+//    }
+//
+//    @Primary
+//    @Bean
+//    public ReactiveRedisConnectionFactory primaryFactory(Props props) {
+//        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(props.getRedisHost());
+//        configuration.setPort(props.getRedisPort());
+//        configuration.setPassword(props.getRedisPassword());
+//        configuration.setDatabase(0);
+//        return new LettuceConnectionFactory(configuration);
+//    }
 
     /**
      * redis存储
      *
      * @return
      */
-    @Bean("sessionRedisTemplate")
-    public RedisTemplate<String, Object> redisTemplate(@Qualifier("sessionRedisFactory") RedisConnectionFactory factory) {
-        RedisTemplate<String, Object> template = new RedisTemplate();
-        template.setKeySerializer(new StringRedisSerializer());
-//        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(HashMap.class));
-        template.setValueSerializer(new JdkSerializationRedisSerializer());
-        template.setConnectionFactory(factory);
-        return template;
-    }
+//    @Order(5555)
+//    @Bean("sessionRedisTemplate")
+//    public ReactiveStringRedisTemplate redisTemplate(@Qualifier("sessionRedisFactory") ReactiveRedisConnectionFactory factory) {
+//        ReactiveStringRedisTemplate template = new ReactiveStringRedisTemplate(factory);
+//
+//        return template;
+//    }
 
 }

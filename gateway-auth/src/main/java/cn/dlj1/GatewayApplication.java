@@ -3,17 +3,17 @@ package cn.dlj1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.server.session.WebSessionManager;
 
 import java.util.Map;
 
 /**
  *
  */
+//@SpringBootApplication(exclude = {RedisReactiveAutoConfiguration.class })
 @SpringBootApplication
 public class GatewayApplication implements CommandLineRunner {
 
