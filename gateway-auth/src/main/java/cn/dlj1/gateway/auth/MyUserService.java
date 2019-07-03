@@ -24,10 +24,9 @@ public class MyUserService implements UserService {
 
     @Override
     public Mono<UserDetail> findUser(String username, String password) {
-        Mono<User> user = Mono
-                .defer(() -> Mono.just(this.userRepository.findByUsernameAndPassword(username, password)))
-                .subscribeOn(jdbcScheduler);
-
-        return user.flatMap(u -> Mono.just((UserDetail) u));
+        return Mono
+                .defer(() -> Mono.justOrEmpty(this.userRepository.findByUsernameAndPassword(username, password)))
+                .subscribeOn(jdbcScheduler)
+                .flatMap(u -> Mono.justOrEmpty((UserDetail) u));
     }
 }

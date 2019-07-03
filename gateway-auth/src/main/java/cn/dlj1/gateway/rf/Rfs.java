@@ -2,6 +2,7 @@ package cn.dlj1.gateway.rf;
 
 import cn.dlj1.auth.UserService;
 import cn.dlj1.auth.session.DefaultWebSession;
+import cn.dlj1.gateway.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Controller;
@@ -44,18 +45,26 @@ public class Rfs {
         map.put("success", true);
 
         return exchange.getFormData()
-                .flatMap(stringStringMultiValueMap -> userService.findUser(stringStringMultiValueMap.getFirst("username"), stringStringMultiValueMap.getFirst("password")))
+                .flatMap(mp ->
+                        userService.findUser(
+                                mp.getFirst("username"),
+                                mp.getFirst("password")
+                        )
+                )
+                .defaultIfEmpty(User.EMPTY)
                 .flatMap(userDetail -> {
-                    if (null == userDetail) {
+                    if (User.EMPTY == userDetail) {
                         map.put("success", false);
                         map.put("message", "用户为空!");
                         return Mono.just(map);
-                    } else {
-                        return session.flatMap(webSession -> {
-                            ((DefaultWebSession) webSession).setUser(userDetail);
-                            return Mono.just(map);
-                        });
                     }
+
+                    return session.flatMap(webSession -> {
+                        User user = ((User) userDetail);
+                        user.addAuthCode("book");
+                        ((DefaultWebSession) webSession).setUser(user);
+                        return Mono.just(map);
+                    });
                 });
     }
 

@@ -28,7 +28,7 @@
                         alert("登陆成功!");
                         var ret = location.search.match(/.*to=(.*)&?/);
                         if (ret) {
-                            location.href = ret[1].replace("&", "");
+                            location.href = decodeURIComponent(ret[1]).replace("&", "");
                         }
                         return;
                     }

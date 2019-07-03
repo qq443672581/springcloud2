@@ -1,11 +1,11 @@
 package cn.dlj1.gateway.auth;
 
-import cn.dlj1.auth.AuthCode;
 import cn.dlj1.auth.UserDetail;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author fivewords
@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 public class User implements UserDetail {
 
+    public static transient User EMPTY = new User();
     @Id
     @GenericGenerator(name = "user-uuid", strategy = "uuid")
     @GeneratedValue(generator = "user-uuid")
@@ -26,9 +27,13 @@ public class User implements UserDetail {
     private String password;
 
     @Transient
-    private List<AuthCode> authCodes;
+    private Set<String> authCodes;
 
-    public User(String username, String password, List<AuthCode> authCodes) {
+    public User() {
+
+    }
+
+    public User(String username, String password, Set<String> authCodes) {
         this.username = username;
         this.password = password;
         this.authCodes = authCodes;
@@ -54,8 +59,16 @@ public class User implements UserDetail {
         this.password = password;
     }
 
-    public void setAuthCodes(List<AuthCode> authCodes) {
+    public void setAuthCodes(Set<String> authCodes) {
         this.authCodes = authCodes;
+    }
+
+    public Set<String> addAuthCode(String code) {
+        if (null == this.authCodes) {
+            this.authCodes = new HashSet<>();
+        }
+        this.authCodes.add(code);
+        return this.authCodes;
     }
 
     @Override
@@ -64,7 +77,7 @@ public class User implements UserDetail {
     }
 
     @Override
-    public List<AuthCode> getAuthCodes() {
+    public Set<String> getAuthCodes() {
         return authCodes;
     }
 }
