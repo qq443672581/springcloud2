@@ -10,4 +10,9 @@ public class Attributes extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public Object remove(Object key) {
+        return super.remove(key);
+    }
+
 }

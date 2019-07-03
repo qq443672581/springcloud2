@@ -3,11 +3,9 @@ package cn.dlj1.auth.session;
 import cn.dlj1.auth.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.server.session.WebSessionStore;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
@@ -21,20 +19,15 @@ import java.util.UUID;
 public class RedisSessionStore implements WebSessionStore {
 
     //    @Resource(name = "sessionRedisTemplate")
-    @Autowired
-    ReactiveRedisTemplate<String, String> redisTemplate;
+    @Resource(name = "reactiveRedisTemplate")
+    ReactiveRedisTemplate redisTemplate;
     @Autowired
     Config.Props props;
 
     @Override
     public Mono<WebSession> createWebSession() {
         String sessionId = UUID.randomUUID().toString();
-        Attributes attributes = new Attributes() {
-            @Override
-            public Object remove(Object key) {
-                return super.remove(key);
-            }
-        };
+        Attributes attributes = new Attributes();
         DefaultWebSession session = new DefaultWebSession(sessionId, attributes, redisTemplate);
         session.init(props.getCookieMaxAge().toMillis());
 
@@ -48,18 +41,18 @@ public class RedisSessionStore implements WebSessionStore {
                 .get(id)
                 .switchIfEmpty(Mono.empty())
                 .flatMap(s -> {
-            return Mono.just(new DefaultWebSession(id, new Attributes(), redisTemplate));
-        });
+                    Attributes attributes = (Attributes) s;
+                    return Mono.just(new DefaultWebSession(id, attributes, redisTemplate));
+                });
     }
 
     @Override
     public Mono<Void> removeSession(String s) {
-        return Flux.empty().doOnNext(o -> redisTemplate.delete(s)).then();
+        return redisTemplate.delete(s);
     }
 
     @Override
     public Mono<WebSession> updateLastAccessTime(WebSession webSession) {
-
         return Mono.just(webSession);
     }
 }

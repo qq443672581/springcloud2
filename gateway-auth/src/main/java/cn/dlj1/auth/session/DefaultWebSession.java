@@ -1,7 +1,7 @@
 package cn.dlj1.auth.session;
 
+import cn.dlj1.auth.UserDetail;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 public class DefaultWebSession implements WebSession {
 
     // 创建时间
-    static String SA_CREATE_TIME = "SESSION_ATTRIBUTE:CREATE_TIME";
+    public static String SA_CREATE_TIME = "SESSION_ATTRIBUTE:CREATE_TIME";
     // 最后访问时间
     static String SA_LAST_ACCESS_TIME = "SESSION_ATTRIBUTE:LAST_ACCESS_TIME";
     // 最大存活时间
@@ -27,14 +27,14 @@ public class DefaultWebSession implements WebSession {
     // 是否登录
     static String SA_LOGIN = "SESSION_ATTRIBUTE:LOGIN";
     // 用户
-    static String SA_USER = "SESSION_ATTRIBUTE:USER";
+    public static String SA_USER = "SESSION_ATTRIBUTE:USER";
 
     private String id;
     private boolean start = true;
     private Attributes attributes;
-    private ReactiveRedisTemplate<String, String> redisTemplate;
+    private ReactiveRedisTemplate<String, Object> redisTemplate;
 
-    public DefaultWebSession(String id, Attributes attributes, ReactiveRedisTemplate<String, String> redisTemplate) {
+    public DefaultWebSession(String id, Attributes attributes, ReactiveRedisTemplate<String, Object> redisTemplate) {
         this.id = id;
         this.attributes = attributes;
         this.redisTemplate = redisTemplate;
@@ -59,13 +59,16 @@ public class DefaultWebSession implements WebSession {
         return attributes;
     }
 
-    public Object getUser() {
-        return this.attributes.get(SA_USER);
+    public UserDetail getUser() {
+        return (UserDetail) this.attributes.get(SA_USER);
+    }
+
+    public void setUser(UserDetail user) {
+        this.attributes.put(SA_USER, user);
     }
 
     public boolean isLogin() {
-        Boolean login = (Boolean) this.attributes.get(SA_LOGIN);
-        return null != login && login;
+        return null != getUser();
     }
 
     @Override
@@ -86,21 +89,17 @@ public class DefaultWebSession implements WebSession {
 
     @Override
     public Mono<Void> invalidate() {
-        Mono.create(monoSink -> {
-            Mono.just("");
-        });
         start = false;
         attributes.clear();
-        this.redisTemplate.delete(id);
         System.out.println("session:invalidate");
-        return Mono.empty();
+        return this.redisTemplate.delete(id).flatMap(aLong -> Mono.empty());
     }
 
     @Override
     public Mono<Void> save() {
         Duration maxIdleTime = getMaxIdleTime();
         Map<String, Object> attributes = this.getAttributes();
-        return this.redisTemplate.opsForValue().set(id, "", maxIdleTime).flatMap(aBoolean -> Mono.empty());
+        return this.redisTemplate.opsForValue().set(id, attributes, maxIdleTime).flatMap(aBoolean -> Mono.empty());
 
     }
 

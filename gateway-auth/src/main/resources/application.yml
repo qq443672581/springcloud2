@@ -1,6 +1,14 @@
 server:
   port: 8002
 spring:
+  datasource:
+    url: jdbc:mysql://118.25.195.209:3306/cloud_common?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: yxx@144830
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initialization-mode: always
+  thymeleaf:
+    cache: false
   application:
     name: gateway
   cloud:
@@ -24,8 +32,8 @@ spring:
 #            redis-rate-limiter.replenishRate: 1
 #            redis-rate-limiter.burstCapacity: 10
   redis:
-#    host: 10.16.0.58
-    host: 192.168.3.188
+    host: 10.16.0.58
+#    host: 192.168.3.188
     port: 6379
     password: 123456
     database: 0

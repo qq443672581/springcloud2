@@ -7,6 +7,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -18,16 +19,17 @@ public class DefaultAuthCheckService implements AuthCheckService {
     @Override
     public Mono<Integer> check(ServerWebExchange exchange) {
         return exchange.getSession().flatMap(webSession -> {
-            if (null == webSession) {
-                return Mono.just(-1);
-            }
+
             DefaultWebSession defaultWebSession = (DefaultWebSession) webSession;
-            Object user = defaultWebSession.getUser();
+            UserDetail user = defaultWebSession.getUser();
             if (null == user) {
                 return Mono.just(-1);
             }
-//            return Mono.just(0);
 
+            List<AuthCode> authCodes = user.getAuthCodes();
+            if (authCodes.size() == 0) {
+                return Mono.just(0);
+            }
 
             return Mono.just(1);
         });

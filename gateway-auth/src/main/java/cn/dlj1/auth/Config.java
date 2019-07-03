@@ -1,15 +1,9 @@
 package cn.dlj1.auth;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
@@ -33,10 +27,47 @@ public class Config {
         private String cookieName = "GATEWAY-SESSION";
         private Duration cookieMaxAge = Duration.ofHours(24);
 
+        private String noAccessHtml = "/no_access.html";
+        private String loginHtml = "/login.html";
+        private String login = "/login";
+        private String logut = "/logut";
+
         private String redisHost;
         private int redisPort = 6379;
         private String redisPassword;
         private int redisDb = 0;
+
+        public String getNoAccessHtml() {
+            return noAccessHtml;
+        }
+
+        public void setNoAccessHtml(String noAccessHtml) {
+            this.noAccessHtml = noAccessHtml;
+        }
+
+        public String getLoginHtml() {
+            return loginHtml;
+        }
+
+        public void setLoginHtml(String loginHtml) {
+            this.loginHtml = loginHtml;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public void setLogin(String login) {
+            this.login = login;
+        }
+
+        public String getLogut() {
+            return logut;
+        }
+
+        public void setLogut(String logut) {
+            this.logut = logut;
+        }
 
         public String getCookieName() {
             return cookieName;
@@ -96,16 +127,17 @@ public class Config {
      */
     @Bean
     public WebSessionManager webSessionManager(WebSessionStore webSessionStore, Props props) {
-        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
-        defaultWebSessionManager.setSessionStore(webSessionStore);
+        DefaultWebSessionManager manager = new DefaultWebSessionManager();
+        manager.setSessionStore(webSessionStore);
 
         CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
         resolver.setCookieName(props.getCookieName());
         resolver.setCookieMaxAge(props.getCookieMaxAge());
 
-        defaultWebSessionManager.setSessionIdResolver(resolver);
-        return defaultWebSessionManager;
+        manager.setSessionIdResolver(resolver);
+        return manager;
     }
+
 
     /**
      * 用于redis存储的连接池
