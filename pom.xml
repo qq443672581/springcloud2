@@ -17,6 +17,7 @@
         <module>gateway-security</module>
         <module>gateway-auth</module>
         <module>file-sender</module>
+        <module>webflux</module>
     </modules>
     <packaging>pom</packaging>
 
