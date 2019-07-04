@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 @Configuration
 public class GatewayConfig {
 
-    @Bean
+//    @Bean
     public Scheduler jdbcScheduler(HikariDataSource dataSource) {
         return Schedulers.fromExecutor(Executors.newFixedThreadPool(dataSource.getMaximumPoolSize()));
     }

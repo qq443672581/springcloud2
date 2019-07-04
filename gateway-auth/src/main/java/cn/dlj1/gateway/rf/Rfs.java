@@ -61,7 +61,6 @@ public class Rfs {
 
                     return session.flatMap(webSession -> {
                         User user = ((User) userDetail);
-                        user.addAuthCode("book");
                         ((DefaultWebSession) webSession).setUser(user);
                         return Mono.just(map);
                     });
@@ -72,5 +71,6 @@ public class Rfs {
     public Mono<String> noAccess() {
         return Mono.just("no_access");
     }
+
 
 }

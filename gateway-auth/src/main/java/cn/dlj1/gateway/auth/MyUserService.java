@@ -18,8 +18,8 @@ public class MyUserService implements UserService {
 
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    @Qualifier("jdbcScheduler")
+    @Autowired(required = false)
+//    @Qualifier("jdbcScheduler")
     private Scheduler jdbcScheduler;
 
     @Override
@@ -27,6 +27,10 @@ public class MyUserService implements UserService {
         return Mono
                 .defer(() -> Mono.justOrEmpty(this.userRepository.findByUsernameAndPassword(username, password)))
                 .subscribeOn(jdbcScheduler)
-                .flatMap(u -> Mono.justOrEmpty((UserDetail) u));
+                .flatMap(u -> {
+                    u.addAuthCode("book");
+                    return Mono.just(u);
+                });
     }
+
 }
