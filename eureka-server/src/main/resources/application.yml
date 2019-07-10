@@ -1,15 +1,3 @@
 spring:
-  application:
-    name: eureka-server
-server:
-  port: 1001
-eureka:
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://localhost:1001/eureka/
-  server:
-    # 缓存
-    use-read-only-response-cache: false
-    wait-time-in-ms-when-sync-empty: 0
+  profiles:
+    active: company
