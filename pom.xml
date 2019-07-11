@@ -18,6 +18,7 @@
         <module>gateway-auth</module>
         <module>file-sender</module>
         <module>webflux</module>
+        <module>rabbitMQ</module>
     </modules>
     <packaging>pom</packaging>
 
