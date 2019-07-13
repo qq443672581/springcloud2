@@ -86,13 +86,13 @@ public class MQApplication {
     }
 
     @Autowired
-    AmqpTemplate amqpTemplate;
+    RabbitTemplate rabbitTemplate;
 
     @Bean
     public ApplicationRunner applicationRunner() {
         return args -> {
             Date date = new Date();
-            amqpTemplate.convertAndSend("TopicExchange", "a.b.c", date);
+            rabbitTemplate.convertAndSend("TopicExchange", "a.b.c", date);
         };
     }
 
