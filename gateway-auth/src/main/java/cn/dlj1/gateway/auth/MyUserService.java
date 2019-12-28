@@ -19,7 +19,7 @@ public class MyUserService implements UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired(required = false)
-//    @Qualifier("jdbcScheduler")
+    @Qualifier("jdbcScheduler")
     private Scheduler jdbcScheduler;
 
     @Override

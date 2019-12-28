@@ -24,6 +24,11 @@ public class SimpleBootStart {
 
     @GetMapping("")
     public String hello() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return "hello";
     }
 

@@ -14,7 +14,6 @@ import java.util.Map;
 /**
  *
  */
-//@SpringBootApplication(exclude = {RedisReactiveAutoConfiguration.class })
 @SpringBootApplication
 public class GatewayApplication implements CommandLineRunner {
 
