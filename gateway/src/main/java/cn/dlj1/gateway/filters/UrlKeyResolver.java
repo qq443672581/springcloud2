@@ -14,7 +14,7 @@ public class UrlKeyResolver implements KeyResolver {
 
     @Override
     public Mono<String> resolve(ServerWebExchange exchange) {
-        return Mono.just(exchange.getRequest().getRemoteAddress().getHostName());
+        return Mono.just(exchange.getRequest().getRemoteAddress().getAddress().toString());
     }
 
 }

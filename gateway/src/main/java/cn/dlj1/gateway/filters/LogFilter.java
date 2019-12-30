@@ -1,8 +1,6 @@
 package cn.dlj1.gateway.filters;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -13,9 +11,9 @@ import reactor.core.publisher.Mono;
  * @author fivewords
  * @date 2019/6/27 16:23
  */
+@Slf4j
 public class LogFilter implements GlobalFilter, Ordered {
 
-    private static final Log log = LogFactory.getLog(GatewayFilter.class);
     private static final String REQUEST_TIME_BEGIN = "requestTimeBegin";
 
     @Override

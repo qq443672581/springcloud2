@@ -1,7 +1,6 @@
 package cn.dlj1.gateway.filters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -12,9 +11,8 @@ import reactor.core.publisher.Mono;
  * @author fivewords
  * @date 2019/6/27 16:35
  */
+@Slf4j
 public class AuthFilter implements GlobalFilter, Ordered {
-
-    Logger logger = LoggerFactory.getLogger(AuthFilter.class);
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
