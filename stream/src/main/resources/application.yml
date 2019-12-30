@@ -13,6 +13,7 @@ spring:
         bindings:
           input:
             consumer:
+              ttl: 5000
               autoBindDlq: true
 
   rabbitmq:

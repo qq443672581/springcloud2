@@ -5,17 +5,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-@EnableBinding({Sink.class, Source.class})
-@EnableScheduling
+@EnableBinding({Processor.class})
+@RestController
 @SpringBootApplication
 public class StreamApplication {
 
@@ -27,46 +27,45 @@ public class StreamApplication {
         SpringApplication.run(StreamApplication.class);
     }
 
-    @Scheduled(fixedDelay = 5000)
-    public void scheduling(){
-            source.output().send(
-                    MessageBuilder
-                            .withPayload(new Person(UUID.randomUUID().toString()))
-                            .setHeader("x-expires", 1)
-                            .setHeader("x-message-ttl", 1)
-                            .build()
-            );
+    @GetMapping
+    public String scheduling(){
+        source.output().send(
+                MessageBuilder
+                        .withPayload(new Person())
+                        .build()
+        );
+        return "ok";
     }
 
-
     @StreamListener(Sink.INPUT)
-    public void handle(Person person) {
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void handle(Person person) throws InterruptedException {
         System.out.println("Received1: " + person);
     }
 
     public static class Person {
 
-        public Person(){}
+        public Person(){
+            this(UUID.randomUUID().toString());
+        }
 
         public Person(String name){
             this.name = name;
         }
 
         private String name;
+
         public String getName() {
             return name;
         }
+
         public void setName(String name) {
             this.name = name;
         }
+
         public String toString() {
             return this.name;
         }
+
     }
 
 }
