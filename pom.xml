@@ -18,6 +18,8 @@
         <module>gateway-auth</module>
         <module>file-sender</module>
         <module>webflux</module>
+        <module>stream</module>
+        <module>lock</module>
         <module>rabbitMQ</module>
     </modules>
     <packaging>pom</packaging>

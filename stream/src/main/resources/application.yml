@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: springcloud-stream
+          group: test
+          binder: rabbit
+        output:
+          destination: springcloud-stream
+          binder: rabbit
+      rabbit:
+        bindings:
+          input:
+            consumer:
+              autoBindDlq: true
+
+  rabbitmq:
+    username: u
+    password: 123456
+    virtual-host: /
+    addresses: jd.dlj1.cn:5672
