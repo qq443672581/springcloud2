@@ -8,19 +8,7 @@
     <artifactId>springcloud2</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>simple-boot</module>
-        <module>eureka-server</module>
-        <module>eureka-client</module>
-        <module>sso</module>
-        <module>security</module>
-        <module>gateway</module>
-        <module>gateway-security</module>
-        <module>gateway-auth</module>
-        <module>file-sender</module>
-        <module>webflux</module>
         <module>stream</module>
-        <module>lock</module>
-        <module>rabbitMQ</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -1,1 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.dlj1.lock.jedis.config.LockAutoConfiguration

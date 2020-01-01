@@ -1,6 +1,0 @@
-server:
-  port: 8080
-  connection-timeout: 1m
-
-jedis:
-  host-name: 192.168.3.111
