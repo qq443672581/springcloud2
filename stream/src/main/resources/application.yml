@@ -1,20 +1,28 @@
 spring:
-  cloud:
-    stream:
-      bindings:
-        input:
-          destination: springcloud-stream
-          group: test
-          binder: rabbit
-        output:
-          destination: springcloud-stream
-          binder: rabbit
-      rabbit:
-        bindings:
-          input:
-            consumer:
-              ttl: 5000
-              autoBindDlq: true
+#  cloud:
+#    stream:
+#      bindings:
+#        MESSAGE_PUSH_CENTER_LISTENER:
+#          destination: MESSAGE_PUSH_CENTER
+#          group: LISTENER_QUEUE
+#          binder: rabbit
+##
+##        MESSAGE_PUSH_CENTER:
+##          destination: MESSAGE_PUSH_CENTER
+##          binder: rabbit
+##        MESSAGE_PUSH_CENTER_NOW:
+##          destination: MESSAGE_PUSH_CENTER
+##          binder: rabbit
+#
+#      rabbit:
+#        bindings:
+##          MESSAGE_PUSH_CENTER_NOW:
+##            producer:
+##              routingKeyExpression: 'LISTENER_QUEUE'
+#          MESSAGE_PUSH_CENTER_LISTENER:
+#            consumer:
+#              autoBindDlq: true
+#              bindingRoutingKey: 'LISTENER_QUEUE'
 
   rabbitmq:
     username: u
