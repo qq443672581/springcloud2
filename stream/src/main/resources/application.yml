@@ -1,31 +1,18 @@
 spring:
-#  cloud:
-#    stream:
-#      bindings:
-#        MESSAGE_PUSH_CENTER_LISTENER:
-#          destination: MESSAGE_PUSH_CENTER
-#          group: LISTENER_QUEUE
-#          binder: rabbit
-##
-##        MESSAGE_PUSH_CENTER:
-##          destination: MESSAGE_PUSH_CENTER
-##          binder: rabbit
-##        MESSAGE_PUSH_CENTER_NOW:
-##          destination: MESSAGE_PUSH_CENTER
-##          binder: rabbit
-#
-#      rabbit:
-#        bindings:
-##          MESSAGE_PUSH_CENTER_NOW:
-##            producer:
-##              routingKeyExpression: 'LISTENER_QUEUE'
-#          MESSAGE_PUSH_CENTER_LISTENER:
-#            consumer:
-#              autoBindDlq: true
-#              bindingRoutingKey: 'LISTENER_QUEUE'
-
   rabbitmq:
     username: u
     password: 123456
     virtual-host: /
     addresses: jd.dlj1.cn:5672
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: test
+          group: queue
+          binder: rabbit
+          consumer:
+            concurrency: 2
+        output:
+          destination: test
+          binder: rabbit
