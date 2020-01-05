@@ -1,18 +1,37 @@
 spring:
-  rabbitmq:
-    username: u
-    password: 123456
-    virtual-host: /
-    addresses: jd.dlj1.cn:5672
+#  rabbitmq:
+#    username: u
+#    password: 123456
+#    virtual-host: /
+#    addresses: jd.dlj1.cn:5672
   cloud:
     stream:
       bindings:
         input:
           destination: test
           group: queue
-          binder: rabbit
+          binder: rabbit2
           consumer:
             concurrency: 2
         output:
           destination: test
-          binder: rabbit
+          binder: rabbit2
+      binders:
+        rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                username: u
+                password: 123456
+                virtual-host: /
+                addresses: jd.dlj1.cn:5672
+        rabbit2:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                username: admin
+                password: admin
+                virtual-host: /
+                addresses: 192.168.3.88:5672

@@ -30,7 +30,7 @@ public class StreamApplication {
     @GetMapping
     public String get() {
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 500; i++) {
 
             processor.output().send(
                     MessageBuilder
